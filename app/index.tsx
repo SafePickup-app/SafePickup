@@ -7,90 +7,99 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  StatusBar,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
-  // بعد نجاح تسجيل الدخول:
   const handleLogin = () => {
-    router.replace("/dashboard")
-    // هنا تحط تحققك من السيرفر أو OTP
-
-    };
+    router.replace("/dashboard");
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Switch Header */}
-      <View style={styles.switchContainer}>
-        <TouchableOpacity style={[styles.switchButton, styles.activeSwitch]}>
-          <Text style={styles.activeSwitchText}>Login</Text>
-        </TouchableOpacity>
+    <LinearGradient
+      colors={["#0E6B3B", "#0A4F2A", "#041E12"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
 
-        <TouchableOpacity
-          style={styles.switchButton}
-          onPress={() => router.replace("/register")}
-        >
-          <Text style={styles.switchText}>New Account</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Switch Header */}
+        <View style={styles.switchContainer}>
+          <TouchableOpacity style={[styles.switchButton, styles.activeSwitch]}>
+            <Text style={styles.activeSwitchText}>Login</Text>
+          </TouchableOpacity>
 
-      {/* Card */}
-      <View style={styles.card}>
-        <Text style={styles.title}>Login</Text>
-        <Text style={styles.subtitle}>
-          Please enter your personal information to access your account
-        </Text>
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => router.replace("/register")}
+          >
+            <Text style={styles.switchText}>New Account</Text>
+          </TouchableOpacity>
+        </View>
 
-        <Text style={styles.label}>Phone number</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="05XXXXXXXX"
-          keyboardType="phone-pad"
-          value={phone}
-          onChangeText={setPhone}
-        />
+        {/* Glass Card */}
+        <BlurView intensity={60} tint="light" style={styles.glassCard}>
+          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.subtitle}>
+            Enter your credentials to continue
+          </Text>
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="********"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+          <Text style={styles.label}>Phone number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="05XXXXXXXX"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={setPhone}
+          />
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="********"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-      {/* Bottom Footer */}
-      <View style={styles.bottomBar}>
-        <Text style={styles.bottomText}>Contact Us</Text>
-        <Text style={styles.bottomText}>Terms</Text>
-        <Text style={styles.bottomText}>Policy</Text>
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableOpacity>
+        </BlurView>
+
+        {/* Footer */}
+        <View style={styles.bottomBar}>
+          <Text style={styles.bottomText}>Contact Us</Text>
+          <Text style={styles.bottomText}>Terms</Text>
+          <Text style={styles.bottomText}>Policy</Text>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F6F9",
     justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
 
   switchContainer: {
     marginTop: 60,
     alignSelf: "center",
     flexDirection: "row",
-    backgroundColor: "#1E8E52",
+    backgroundColor: "rgba(255,255,255,0.15)",
     borderRadius: 30,
     padding: 5,
-    width: "80%",
+    width: "90%",
   },
 
   switchButton: {
@@ -110,67 +119,76 @@ const styles = StyleSheet.create({
   },
 
   activeSwitchText: {
-    color: "#1E8E52",
+    color: "#0E6B3B",
     fontWeight: "700",
   },
 
-  card: {
-    backgroundColor: "#fff",
-    marginHorizontal: 25,
-    borderRadius: 20,
+  glassCard: {
+    borderRadius: 30,
     padding: 25,
-    elevation: 5,
+    marginHorizontal: 20,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+    
   },
 
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
+    color: "#fff",
     marginBottom: 5,
   },
 
   subtitle: {
     textAlign: "center",
-    fontSize: 12,
-    color: "gray",
-    marginBottom: 20,
+    fontSize: 13,
+    color: "rgba(255,255,255,0.8)",
+    marginBottom: 25,
   },
 
   label: {
     fontSize: 14,
-    marginBottom: 5,
-    marginTop: 10,
+    marginBottom: 6,
+    marginTop: 12,
+    fontWeight: "600",
+    color: "#fff",
   },
 
   input: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 15,
+    padding: 15,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
+    borderColor: "rgba(255,255,255,0.25)",
+    color: "#fff",
   },
 
   loginButton: {
-    backgroundColor: "#1E8E52",
-    padding: 14,
-    borderRadius: 12,
-    marginTop: 20,
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 18,
+    marginTop: 30,
   },
 
   loginText: {
-    color: "#fff",
+    color: "#0E6B3B",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 16,
   },
 
   bottomBar: {
     flexDirection: "row",
     justifyContent: "space-around",
-    padding: 25,
-    backgroundColor: "#0E6B3B",
+    paddingVertical: 25,
   },
 
   bottomText: {
     color: "#fff",
     fontSize: 12,
+    opacity: 0.9,
   },
 });

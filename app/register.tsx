@@ -1,259 +1,252 @@
 import React, { useState } from "react";
 import { router } from "expo-router";
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    SafeAreaView,
-    ScrollView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 
 export default function RegisterScreen() {
-    const [form, setForm] = useState({
-        username: "",
-        phone: "",
-        email: "",
-        password: "",
-        nationalId: "",
-    });
+  const [form, setForm] = useState({
+    username: "",
+    phone: "",
+    email: "",
+    password: "",
+    nationalId: "",
+  });
 
-    interface FormData {
-        username: string;
-        phone: string;
-        email: string;
-        password: string;
-        nationalId: string;
-    }
+  interface FormData {
+    username: string;
+    phone: string;
+    email: string;
+    password: string;
+    nationalId: string;
+  }
 
-    const handleChange = (key: keyof FormData, value: string) => {
-        setForm({ ...form, [key]: value });
-    };
+  const handleChange = (key: keyof FormData, value: string) => {
+    setForm({ ...form, [key]: value });
+  };
 
-    const handleRegister = () => {
-        console.log(form);
-    };
+  const handleRegister = () => {
+    console.log(form);
+  };
 
-    return (
-        <SafeAreaView style={styles.container}>
+  return (
+    <LinearGradient
+      colors={["#0E6B3B", "#0A4F2A", "#041E12"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
 
-            {/* Header */}
-            {/* Switch Header */}
-            <View style={styles.switchContainer}>
-                <TouchableOpacity
-                    style={styles.switchButton}
-                    onPress={() => router.replace("/")}
-                >
-                    <Text style={styles.switchText}>Login</Text>
-                </TouchableOpacity>
+        {/* Switch Header */}
+        <View style={styles.switchContainer}>
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => router.replace("/")}
+          >
+            <Text style={styles.switchText}>Login</Text>
+          </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[styles.switchButton, styles.activeSwitch]}
-                >
-                    <Text style={styles.activeSwitchText}>New Account</Text>
-                </TouchableOpacity>
-            </View>
+          <TouchableOpacity
+            style={[styles.switchButton, styles.activeSwitch]}
+          >
+            <Text style={styles.activeSwitchText}>New Account</Text>
+          </TouchableOpacity>
+        </View>
 
-            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
-                <View style={styles.card}>
-                    <Text style={styles.title}>Create Account</Text>
-                    <Text style={styles.subtitle}>
-                        Please enter your personal information to create new account
-                    </Text>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "center",
+          }}
+        >
+          <BlurView intensity={60} tint="light" style={styles.glassCard}>
+            <Text style={styles.title}>Create Account</Text>
+            <Text style={styles.subtitle}>
+              Please enter your information.
+            </Text>
 
-                    <Text style={styles.label}>Username</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="example: Ahmed_Yasser"
-                        value={form.username}
-                        onChangeText={(text) => handleChange("username", text)}
-                    />
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="example: Ahmed_Yasser"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              value={form.username}
+              onChangeText={(text) => handleChange("username", text)}
+            />
 
-                    <Text style={styles.label}>Phone number</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="05XXXXXXXX"
-                        keyboardType="phone-pad"
-                        value={form.phone}
-                        onChangeText={(text) => handleChange("phone", text)}
-                    />
+            <Text style={styles.label}>Phone number</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="05XXXXXXXX"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              keyboardType="phone-pad"
+              value={form.phone}
+              onChangeText={(text) => handleChange("phone", text)}
+            />
 
-                    <Text style={styles.label}>Personal email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="yasir@example.com"
-                        keyboardType="email-address"
-                        value={form.email}
-                        onChangeText={(text) => handleChange("email", text)}
-                    />
+            <Text style={styles.label}>Personal email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="yasir@example.com"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              keyboardType="email-address"
+              value={form.email}
+              onChangeText={(text) => handleChange("email", text)}
+            />
 
-                    <Text style={styles.label}>Password</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="********"
-                        secureTextEntry
-                        value={form.password}
-                        onChangeText={(text) => handleChange("password", text)}
-                    />
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="********"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              secureTextEntry
+              value={form.password}
+              onChangeText={(text) => handleChange("password", text)}
+            />
 
-                    <Text style={styles.label}>National ID</Text>
-                    <TextInput
-                        style={styles.input}
-                        keyboardType="numeric"
-                        value={form.nationalId}
-                        onChangeText={(text) => handleChange("nationalId", text)}
-                    />
+            <Text style={styles.label}>National ID</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              value={form.nationalId}
+              onChangeText={(text) =>
+                handleChange("nationalId", text)
+              }
+            />
 
-                    <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                        <Text style={styles.registerText}>Create Account</Text>
-                    </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.registerButton}
+              onPress={handleRegister}
+            >
+              <Text style={styles.registerText}>Create Account</Text>
+            </TouchableOpacity>
+          </BlurView>
+        </ScrollView>
 
-
-                </View>
-            </ScrollView>
-
-            {/* Footer */}
-            <View style={styles.bottomBar}>
-                <Text style={styles.bottomText}>Contact Us</Text>
-                <Text style={styles.bottomText}>Terms</Text>
-                <Text style={styles.bottomText}>Policy</Text>
-            </View>
-        </SafeAreaView>
-    );
+        {/* Footer */}
+        <View style={styles.bottomBar}>
+          <Text style={styles.bottomText}>Contact Us</Text>
+          <Text style={styles.bottomText}>Terms</Text>
+          <Text style={styles.bottomText}>Policy</Text>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#F4F6F9",
-        justifyContent: "space-between",
-    },
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+  },
 
-    header: {
-        paddingTop: 60,
-        flexDirection: "row",
-        justifyContent: "center",
-        padding: 15,
-        backgroundColor: "#0E6B3B",
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-    },
+  switchContainer: {
+    marginTop: 60,
+    alignSelf: "center",
+    flexDirection: "row",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderRadius: 30,
+    padding: 5,
+    width: "90%",
+  },
 
-    headerButton: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        marginHorizontal: 5,
-        borderRadius: 20,
-        backgroundColor: "#1E8E52",
-    },
+  switchButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 25,
+    alignItems: "center",
+  },
 
-    activeButton: {
-        backgroundColor: "#145C32",
-    },
+  activeSwitch: {
+    backgroundColor: "#fff",
+  },
 
-    headerText: {
-        color: "#fff",
-        fontWeight: "600",
-    },
-    switchContainer: {
-        marginTop: 60,
-        alignSelf: "center",
-        flexDirection: "row",
-        backgroundColor: "#1E8E52",
-        borderRadius: 30,
-        padding: 5,
-        width: "80%",
-    },
+  switchText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
 
-    switchButton: {
-        flex: 1,
-        paddingVertical: 10,
-        borderRadius: 25,
-        alignItems: "center",
-    },
+  activeSwitchText: {
+    color: "#0E6B3B",
+    fontWeight: "700",
+  },
 
-    activeSwitch: {
-        backgroundColor: "#fff",
-    },
+  glassCard: {
+    borderRadius: 30,
+    padding: 20,
+    marginHorizontal: 20,   
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+  },
 
-    switchText: {
-        color: "#fff",
-        fontWeight: "600",
-    },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#fff",
+    marginBottom: 5,
+  },
 
-    activeSwitchText: {
-        color: "#1E8E52",
-        fontWeight: "700",
-    },
-    card: {
-        backgroundColor: "#fff",
-        marginHorizontal: 25,
-        borderRadius: 20,
-        padding: 25,
-        elevation: 5,
-    },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "rgba(255,255,255,0.8)",
+    marginBottom: 10,
+  },
 
-    title: {
-        fontSize: 22,
-        fontWeight: "bold",
-        textAlign: "center",
-        marginBottom: 5,
-    },
+  label: {
+    fontSize: 14,
+    marginBottom: 6,
+    marginTop: 12,
+    fontWeight: "600",
+    color: "#fff",
+  },
 
-    subtitle: {
-        textAlign: "center",
-        fontSize: 12,
-        color: "gray",
-        marginBottom: 20,
-    },
+  input: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 15,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+    color: "#fff",
+  },
 
-    label: {
-        fontSize: 14,
-        marginBottom: 5,
-        marginTop: 10,
-    },
+  registerButton: {
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 18,
+    marginTop: 30,
+  },
 
-    input: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 10,
-        padding: 10,
-    },
+  registerText: {
+    color: "#0E6B3B",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 
-    registerButton: {
-        backgroundColor: "#1E8E52",
-        padding: 12,
-        borderRadius: 10,
-        marginTop: 20,
-    },
+  bottomBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 25,
+  },
 
-    registerText: {
-        color: "#fff",
-        textAlign: "center",
-        fontWeight: "bold",
-    },
-
-    footerText: {
-        textAlign: "center",
-        marginTop: 15,
-        fontSize: 12,
-    },
-
-    link: {
-        color: "#1E8E52",
-        fontWeight: "bold",
-    },
-
-    bottomBar: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        padding: 25,
-        backgroundColor: "#0E6B3B",
-    },
-
-    bottomText: {
-        color: "#fff",
-        fontSize: 12,
-    },
+  bottomText: {
+    color: "#fff",
+    fontSize: 12,
+    opacity: 0.9,
+  },
 });
