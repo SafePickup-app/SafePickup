@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,134 +9,261 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
-  Platform,
-} from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
+  StatusBar,
+} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window')
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const SAMPLE_STUDENTS = [
-  { id: '1', name: 'ahmed alzaid', grade: 'G1' },
-  { id: '2', name: 'Faisal Alahassoun', grade: 'G2' },
-  { id: '3', name: 'Yasir Alateeq', grade: 'G1' },
-  { id: '4', name: 'Yaser Alrashid', grade: 'G3' },
-  { id: '5', name: 'John doe', grade: 'G4' },
-  { id: '6', name: 'ahmed alzaid', grade: 'G5' },
-  { id: '7', name: 'Faisal Alahassoun', grade: 'G2' },
-]
+  { id: "1", name: "ahmed alzaid", grade: "G1" },
+  { id: "2", name: "Faisal Alahassoun", grade: "G2" },
+  { id: "3", name: "Yasir Alateeq", grade: "G1" },
+  { id: "4", name: "Yaser Alrashid", grade: "G3" },
+  { id: "5", name: "John doe", grade: "G4" },
+  { id: "6", name: "ahmed alzaid", grade: "G5" },
+  { id: "7", name: "Faisal Alahassoun", grade: "G2" },
+];
 
 export default function StudentAssignment() {
-  const params = useLocalSearchParams()
-  const parentName = (params.name as string) || ''
-  const [query, setQuery] = useState('')
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const parentName = (params.name as string) || "";
+  const [query, setQuery] = useState("");
 
-  const filtered = SAMPLE_STUDENTS.filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
+  const filtered = SAMPLE_STUDENTS.filter((s) =>
+    s.name.toLowerCase().includes(query.toLowerCase())
+  );
 
   const renderRow = ({ item, index }: { item: any; index: number }) => {
-    const rowTint = index % 2 === 0 ? styles.rowEven : null
+    const even = index % 2 === 0;
+
     return (
-      <View style={[styles.row, rowTint]}>
+      <View style={[styles.row, even && styles.rowEven]}>
         <View style={[styles.cell, styles.nameCell]}>
           <Text style={styles.nameText}>{item.name}</Text>
         </View>
 
         <View style={[styles.cell, styles.centerCell]}>
-          <Text style={styles.normalText}>{item.grade}</Text>
+          <Text style={styles.gradeBadge}>{item.grade}</Text>
         </View>
 
         <View style={[styles.cell, styles.actionsCell]}>
-          <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
+          <TouchableOpacity style={styles.actionBtn}>
             <Text style={styles.actionBtnText}>Confirm</Text>
           </TouchableOpacity>
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.screen}>
-        <View style={styles.card}>
-          <Text style={styles.title}>Link student to: {parentName}</Text>
+    <LinearGradient
+      colors={["#0E6B3B", "#0A4F2A", "#041E12"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar barStyle="light-content" />
 
-          <View style={styles.searchRow}>
-            <TextInput
-              placeholder="find student by name"
-              value={query}
-              onChangeText={setQuery}
-              style={styles.searchInput}
-            />
-          </View>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.push("/dashboard")}
+          >
+            <Ionicons name="arrow-back" size={22} color="#fff" />
+          </TouchableOpacity>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={[styles.table, { minWidth: Math.max(SCREEN_WIDTH - 48, 600) }]}>
-              <View style={styles.headerRow}>
-                <View style={[styles.headerCell, styles.nameCell]}>
-                  <Text style={styles.headerText}>NAME</Text>
-                </View>
-
-                <View style={[styles.headerCell, styles.centerCell]}>
-                  <Text style={styles.headerText}>GRADE</Text>
-                </View>
-
-                <View style={[styles.headerCell, styles.actionsCell]}>
-                  <Text style={styles.headerText}>ACTION</Text>
-                </View>
-              </View>
-
-              <FlatList data={filtered} keyExtractor={(i) => i.id} renderItem={renderRow} showsVerticalScrollIndicator={false} style={styles.list} />
-            </View>
-          </ScrollView>
+          <Text style={styles.headerTitle}>Student Assignment</Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
+
+        <ScrollView contentContainerStyle={styles.screen}>
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              Link student to:
+              <Text style={styles.parentName}> {parentName}</Text>
+            </Text>
+
+            <View style={styles.searchContainer}>
+              <TextInput
+                placeholder="Find student by name"
+                value={query}
+                onChangeText={setQuery}
+                style={styles.searchInput}
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View
+                style={[
+                  styles.table,
+                  { minWidth: Math.max(SCREEN_WIDTH - 48, 500) },
+                ]}
+              >
+                <View style={styles.headerRow}>
+                  <View style={[styles.cell, styles.nameCell]}>
+                    <Text style={styles.tableHeaderText}>NAME</Text>
+                  </View>
+
+                  <View style={[styles.cell, styles.centerCell]}>
+                    <Text style={styles.tableHeaderText}>GRADE</Text>
+                  </View>
+
+                  <View style={[styles.cell, styles.actionsCell]}>
+                    <Text style={styles.tableHeaderText}>ACTION</Text>
+                  </View>
+                </View>
+
+                <FlatList
+                  data={filtered}
+                  keyExtractor={(i) => i.id}
+                  renderItem={renderRow}
+                  showsVerticalScrollIndicator={false}
+                  style={styles.list}
+                />
+              </View>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
+  );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f0f0f0' },
-  screen: { alignItems: 'center', paddingVertical: 24 },
+  screen: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+
+  header: {
+    marginTop: 40,
+    marginBottom: 20,
+    paddingTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 15,
+  },
+
+  headerTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  backButton: {
+    position: "absolute",
+    left: 20,
+  },
+
   card: {
-    width: '92%',
-    borderRadius: 16,
-    backgroundColor: '#ffffff',
+    borderRadius: 28,
     padding: 20,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    backgroundColor: "#ffffff",
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
   },
-  title: { fontSize: 18, fontWeight: '700', color: '#000', marginBottom: 12 },
 
-  searchRow: { marginBottom: 18 },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 18,
+  },
+
+  parentName: {
+    color: "#0E6B3B",
+    fontWeight: "700",
+  },
+
+  searchContainer: {
+    marginBottom: 18,
+  },
+
   searchInput: {
-    width: 320,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    paddingHorizontal: 12,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: "#e0e0e0",
   },
 
-  table: { flexDirection: 'column' },
-  headerRow: { flexDirection: 'row', paddingVertical: 8, alignItems: 'center' },
-  headerCell: { paddingHorizontal: 8, justifyContent: 'center' },
-  headerText: { fontSize: 12, color: '#9e9e9e', textTransform: 'uppercase', fontWeight: '600' },
+  table: {
+    flexDirection: "column",
+  },
 
-  list: { maxHeight: 360 },
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#e0e0e0' },
-  rowEven: { backgroundColor: '#fafafa' },
+  headerRow: {
+    flexDirection: "row",
+    paddingVertical: 10,
+  },
 
-  cell: { paddingHorizontal: 8, justifyContent: 'center' },
-  nameCell: { flex: 2, alignItems: 'flex-start' },
-  centerCell: { flex: 1, alignItems: 'center' },
-  actionsCell: { flex: 1, alignItems: 'center' },
+  tableHeaderText: {
+    fontSize: 12,
+    color: "#757575",
+    textTransform: "uppercase",
+    fontWeight: "600",
+  },
 
-  nameText: { fontSize: 14, color: '#111' },
-  normalText: { fontSize: 13, color: '#333' },
+  list: {
+    maxHeight: 360,
+  },
 
-  actionBtn: { backgroundColor: '#2e7d32', borderRadius: 6, paddingHorizontal: 14, paddingVertical: 6 },
-  actionBtnText: { color: '#fff', fontSize: 12, fontWeight: '600' },
-})
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eeeeee",
+  },
+
+  rowEven: {
+    backgroundColor: "#fafafa",
+  },
+
+  cell: {
+    paddingHorizontal: 8,
+    justifyContent: "center",
+  },
+
+  nameCell: { flex: 2 },
+  centerCell: { flex: 1, alignItems: "center" },
+  actionsCell: { flex: 1, alignItems: "center" },
+
+  nameText: {
+    fontSize: 14,
+    color: "#111",
+  },
+
+  gradeBadge: {
+    backgroundColor: "#e8f5e9",
+    color: "#2e7d32",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  actionBtn: {
+    backgroundColor: "#0E6B3B",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+
+  actionBtnText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+});
