@@ -1,33 +1,76 @@
-import React from 'react'
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  Dimensions,
+  FlatList,
+  Platform,
   SafeAreaView,
   ScrollView,
-  FlatList,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-  Dimensions,
-  Platform,
-} from 'react-native'
-import { useRouter } from 'expo-router'
+  View,
+} from "react-native";
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window')
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const SAMPLE_DATA = [
-  { id: '1', name: 'ahmed alzaid', nid: '11******11', phone: '0512345678', status: 'approved' },
-  { id: '2', name: 'Faisal Alahassoun', nid: '11******11', phone: '0512345678', status: 'approved' },
-  { id: '3', name: 'Yasir Alateeq', nid: '11******11', phone: '0512345678', status: 'approved' },
-  { id: '4', name: 'Yaser Alrashid', nid: '11******11', phone: '0512345678', status: 'approved' },
-  { id: '5', name: 'John doe', nid: '11******11', phone: '0512345678', status: 'Pending' },
-  { id: '6', name: 'ahmed alzaid', nid: '11******11', phone: '0512345678', status: 'approved' },
-  { id: '7', name: 'Faisal Alahassoun', nid: '11******11', phone: '0512345678', status: 'Pending' },
-]
+  {
+    id: "1",
+    name: "ahmed alzaid",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "2",
+    name: "Faisal Alahassoun",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "3",
+    name: "Yasir Alateeq",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "4",
+    name: "Yaser Alrashid",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "5",
+    name: "John doe",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "Pending",
+  },
+  {
+    id: "6",
+    name: "ahmed alzaid",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "7",
+    name: "Faisal Alahassoun",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "Pending",
+  },
+];
 
 export default function ParentsLinkingHub() {
-  const router = useRouter()
+  const router = useRouter();
   const renderRow = ({ item, index }: { item: any; index: number }) => {
-    const rowTint = index % 2 === 0 ? styles.rowEven : null
+    const rowTint = index % 2 === 0 ? styles.rowEven : null;
     return (
       <View style={[styles.row, rowTint]}>
         <View style={[styles.cell, styles.nameCell]}>
@@ -50,27 +93,47 @@ export default function ParentsLinkingHub() {
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={styles.actionBtn}
-              onPress={() => router.push(`/student-assignment?name=${encodeURIComponent(item.name)}`)}
+              onPress={() =>
+                router.push(
+                  `/student-assignment?name=${encodeURIComponent(item.name)}`,
+                )
+              }
             >
               <Text style={styles.actionBtnText}>Link</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtn, styles.actionBtnMargin]} onPress={() => {}}>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.actionBtnMargin]}
+              onPress={() => {}}
+            >
               <Text style={styles.actionBtnText}>history</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.push("/dashboard")}>
+          <Ionicons name="arrow-back" size={28} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}></Text>
+        <View style={{ width: 28 }} />
+      </View>
+
       <ScrollView contentContainerStyle={styles.screen}>
         <View style={styles.card}>
           <Text style={styles.title}>Available Parents</Text>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={[styles.table, { minWidth: Math.max(SCREEN_WIDTH - 48, 800) }]}>
+            <View
+              style={[
+                styles.table,
+                { minWidth: Math.max(SCREEN_WIDTH - 48, 800) },
+              ]}
+            >
               <View style={styles.headerRow}>
                 <View style={[styles.headerCell, styles.nameCell]}>
                   <Text style={styles.headerText}>NAME</Text>
@@ -105,46 +168,81 @@ export default function ParentsLinkingHub() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f0f0f0' },
-  screen: { alignItems: 'center', paddingVertical: 24 },
+  safe: { flex: 1, backgroundColor: "#f0f0f0" },
+  screen: { alignItems: "center", paddingVertical: 24 },
   card: {
-    width: '92%',
+    width: "92%",
     borderRadius: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 20,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },
-  title: { fontSize: 20, fontWeight: '700', color: '#000', marginBottom: 12 },
+  title: { fontSize: 20, fontWeight: "700", color: "#000", marginBottom: 12 },
 
-  table: { flexDirection: 'column' },
-  headerRow: { flexDirection: 'row', paddingVertical: 8, alignItems: 'center' },
-  headerCell: { paddingHorizontal: 8, justifyContent: 'center' },
-  headerText: { fontSize: 12, color: '#9e9e9e', textTransform: 'uppercase', fontWeight: '600' },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    backgroundColor: "#0E6B3B",
+  },
+
+  headerTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  table: { flexDirection: "column" },
+  headerRow: { flexDirection: "row", paddingVertical: 8, alignItems: "center" },
+  headerCell: { paddingHorizontal: 8, justifyContent: "center" },
+  headerText: {
+    fontSize: 12,
+    color: "#9e9e9e",
+    textTransform: "uppercase",
+    fontWeight: "600",
+  },
 
   list: { maxHeight: 360 },
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#e0e0e0' },
-  rowEven: { backgroundColor: '#fafafa' },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  rowEven: { backgroundColor: "#fafafa" },
 
-  cell: { paddingHorizontal: 8, justifyContent: 'center' },
-  nameCell: { flex: 2, alignItems: 'flex-start' },
-  centerCell: { flex: 1, alignItems: 'center' },
-  actionsCell: { flex: 1.6, alignItems: 'center' },
+  cell: { paddingHorizontal: 8, justifyContent: "center" },
+  nameCell: { flex: 2, alignItems: "flex-start" },
+  centerCell: { flex: 1, alignItems: "center" },
+  actionsCell: { flex: 1.6, alignItems: "center" },
 
-  nameText: { fontSize: 14, color: '#111' },
-  normalText: { fontSize: 13, color: '#333' },
-  nidText: { fontSize: 13, color: '#333', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
-  statusText: { fontSize: 13, color: '#616161' },
+  nameText: { fontSize: 14, color: "#111" },
+  normalText: { fontSize: 13, color: "#333" },
+  nidText: {
+    fontSize: 13,
+    color: "#333",
+    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+  },
+  statusText: { fontSize: 13, color: "#616161" },
 
-  actionsRow: { flexDirection: 'row', alignItems: 'center' },
-  actionBtn: { backgroundColor: '#2e7d32', borderRadius: 6, paddingHorizontal: 14, paddingVertical: 6 },
+  actionsRow: { flexDirection: "row", alignItems: "center" },
+  actionBtn: {
+    backgroundColor: "#2e7d32",
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
   actionBtnMargin: { marginLeft: 8 },
-  actionBtnText: { color: '#fff', fontSize: 12, fontWeight: '600' },
-})
+  actionBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
+});

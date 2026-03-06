@@ -12,6 +12,8 @@ import {
   Platform,
 } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -27,6 +29,7 @@ const SAMPLE_STUDENTS = [
 
 export default function StudentAssignment() {
   const params = useLocalSearchParams()
+  const router = useRouter()
   const parentName = (params.name as string) || ''
   const [query, setQuery] = useState('')
 
@@ -55,6 +58,14 @@ export default function StudentAssignment() {
 
   return (
     <SafeAreaView style={styles.safe}>
+    <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.push("/parents-status")}>
+          <Ionicons name="arrow-back" size={28} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}></Text>
+        <View style={{ width: 28 }} />
+      </View>
+
       <ScrollView contentContainerStyle={styles.screen}>
         <View style={styles.card}>
           <Text style={styles.title}>Link student to: {parentName}</Text>
@@ -108,6 +119,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   title: { fontSize: 18, fontWeight: '700', color: '#000', marginBottom: 12 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    backgroundColor: '#0E6B3B',
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
 
   searchRow: { marginBottom: 18 },
   searchInput: {

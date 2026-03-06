@@ -1,14 +1,14 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from 'expo-router'
 
 type CardProps = {
   title: string;
@@ -36,7 +36,7 @@ const Card: React.FC<CardProps> = ({
 };
 
 export default function Dashboard() {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -53,14 +53,14 @@ export default function Dashboard() {
           title="Parent-Student Assignment"
           description="Link students to their respective parent accounts securely."
           buttonText="Manage Assignment"
-          onPress={() => router.push('/parents-status')}
+          onPress={() => router.push("/parents-status")}
         />
 
         <Card
           title="NFC Card Assignment"
           description="Assign and manage NFC cards connected to student profiles."
           buttonText="Assign NFC Card"
-          onPress={() => console.log("Assign NFC")}
+          onPress={() => router.push("/available-nfcs")}
         />
 
         <Card
