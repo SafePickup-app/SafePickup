@@ -1,17 +1,17 @@
+import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   SafeAreaView,
   ScrollView,
-  TouchableOpacity,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { BlurView } from "expo-blur";
 
 type CardProps = {
   title: string;
@@ -40,7 +40,6 @@ const Card: React.FC<CardProps> = ({
 
 export default function Dashboard() {
   const router = useRouter();
-
   return (
     <LinearGradient
       colors={["#0E6B3B", "#0A4F2A", "#041E12"]}
@@ -52,11 +51,7 @@ export default function Dashboard() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.userRow}>
-            <Ionicons
-              name="person-circle-outline"
-              size={36}
-              color="#fff"
-            />
+            <Ionicons name="person-circle-outline" size={36} color="#fff" />
             <Text style={styles.userName}>Yasir Fahad</Text>
           </View>
         </View>
@@ -74,7 +69,7 @@ export default function Dashboard() {
             title="NFC Card Assignment"
             description="Assign and manage NFC cards connected to student profiles."
             buttonText="Assign NFC Card"
-            onPress={() => console.log("Assign NFC")}
+            onPress={() => router.push("/available-nfcs")}
           />
 
           <Card

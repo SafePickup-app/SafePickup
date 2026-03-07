@@ -1,30 +1,72 @@
+import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  Dimensions,
+  FlatList,
   SafeAreaView,
   ScrollView,
-  FlatList,
-  TouchableOpacity,
-  Dimensions,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { BlurView } from "expo-blur";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const SAMPLE_DATA = [
-  { id: "1", name: "ahmed alzaid", nid: "11******11", phone: "0512345678", status: "approved" },
-  { id: "2", name: "Faisal Alahassoun", nid: "11******11", phone: "0512345678", status: "approved" },
-  { id: "3", name: "Yasir Alateeq", nid: "11******11", phone: "0512345678", status: "approved" },
-  { id: "4", name: "Yaser Alrashid", nid: "11******11", phone: "0512345678", status: "approved" },
-  { id: "5", name: "John doe", nid: "11******11", phone: "0512345678", status: "Pending" },
-  { id: "6", name: "ahmed alzaid", nid: "11******11", phone: "0512345678", status: "approved" },
-  { id: "7", name: "Faisal Alahassoun", nid: "11******11", phone: "0512345678", status: "Pending" },
+  {
+    id: "1",
+    name: "ahmed alzaid",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "2",
+    name: "Faisal Alahassoun",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "3",
+    name: "Yasir Alateeq",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "4",
+    name: "Yaser Alrashid",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "5",
+    name: "John doe",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "Pending",
+  },
+  {
+    id: "6",
+    name: "ahmed alzaid",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "approved",
+  },
+  {
+    id: "7",
+    name: "Faisal Alahassoun",
+    nid: "11******11",
+    phone: "0512345678",
+    status: "Pending",
+  },
 ];
 
 export default function ParentsLinkingHub() {
@@ -32,14 +74,10 @@ export default function ParentsLinkingHub() {
 
   const renderRow = ({ item, index }: { item: any; index: number }) => {
     const backgroundColor =
-  index % 2 === 0
-    ? "#ffffff"
-    : index % 2 === 1
-    ? "#fcfcfc"
-    : "#f7f7f7";
+      index % 2 === 0 ? "#ffffff" : index % 2 === 1 ? "#fcfcfc" : "#f7f7f7";
 
     return (
-<View style={[styles.row, { backgroundColor }]}>
+      <View style={[styles.row, { backgroundColor }]}>
         <View style={[styles.cell, styles.nameCell]}>
           <Text style={styles.nameText}>{item.name}</Text>
         </View>
@@ -56,9 +94,7 @@ export default function ParentsLinkingHub() {
           <Text
             style={[
               styles.statusBadge,
-              item.status === "approved"
-                ? styles.approved
-                : styles.pending,
+              item.status === "approved" ? styles.approved : styles.pending,
             ]}
           >
             {item.status}
@@ -71,7 +107,7 @@ export default function ParentsLinkingHub() {
               style={styles.actionBtn}
               onPress={() =>
                 router.push(
-                  `/student-assignment?name=${encodeURIComponent(item.name)}`
+                  `/student-assignment?name=${encodeURIComponent(item.name)}`,
                 )
               }
             >
