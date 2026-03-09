@@ -54,6 +54,13 @@ export default function Dashboard() {
             <Ionicons name="person-circle-outline" size={36} color="#fff" />
             <Text style={styles.userName}>Yasir Fahad</Text>
           </View>
+
+          <TouchableOpacity
+            style={styles.logoutBtn}
+            onPress={() => router.replace("/")}
+          >
+            <Ionicons name="log-out-outline" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
 
         {/* Content */}
@@ -100,6 +107,12 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 40,
     marginBottom: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 15,
   },
 
   userRow: {
@@ -149,7 +162,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     borderRadius: 14,
   },
-
+  logoutBtn: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    padding: 8,
+    borderRadius: 10,
+  },
   cardButtonText: {
     color: "#0E6B3B",
     fontSize: 13,

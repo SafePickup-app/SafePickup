@@ -8,9 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  StatusBar,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 
 export default function RegisterScreen() {
@@ -39,108 +37,98 @@ export default function RegisterScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#0E6B3B", "#0A4F2A", "#041E12"]}
-      style={{ flex: 1 }}
-    >
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
-
-        {/* Switch Header */}
-        <View style={styles.switchContainer}>
-          <TouchableOpacity
-            style={styles.switchButton}
-            onPress={() => router.replace("/")}
-          >
-            <Text style={styles.switchText}>Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.switchButton, styles.activeSwitch]}
-          >
-            <Text style={styles.activeSwitchText}>New Account</Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
-          }}
+    <SafeAreaView style={styles.container}>
+      {/* Switch Header */}
+      <View style={styles.switchContainer}>
+        <TouchableOpacity
+          style={styles.switchButton}
+          onPress={() => router.replace("/")}
         >
-          <BlurView intensity={60} tint="light" style={styles.glassCard}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>
-              Please enter your information.
-            </Text>
+          <Text style={styles.switchText}>Login</Text>
+        </TouchableOpacity>
 
-            <Text style={styles.label}>Username</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="example: Ahmed_Yasser"
-              placeholderTextColor="rgba(255,255,255,0.6)"
-              value={form.username}
-              onChangeText={(text) => handleChange("username", text)}
-            />
+        <TouchableOpacity style={[styles.switchButton, styles.activeSwitch]}>
+          <Text style={styles.activeSwitchText}>New Account</Text>
+        </TouchableOpacity>
+      </View>
 
-            <Text style={styles.label}>Phone number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="05XXXXXXXX"
-              placeholderTextColor="rgba(255,255,255,0.6)"
-              keyboardType="phone-pad"
-              value={form.phone}
-              onChangeText={(text) => handleChange("phone", text)}
-            />
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+        }}
+      >
+        <BlurView intensity={60} tint="light" style={styles.glassCard}>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>
+            Please enter your information.
+          </Text>
 
-            <Text style={styles.label}>Personal email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="yasir@example.com"
-              placeholderTextColor="rgba(255,255,255,0.6)"
-              keyboardType="email-address"
-              value={form.email}
-              onChangeText={(text) => handleChange("email", text)}
-            />
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="example: Ahmed_Yasser"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            value={form.username}
+            onChangeText={(text) => handleChange("username", text)}
+          />
 
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="********"
-              placeholderTextColor="rgba(255,255,255,0.6)"
-              secureTextEntry
-              value={form.password}
-              onChangeText={(text) => handleChange("password", text)}
-            />
+          <Text style={styles.label}>Phone number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="05XXXXXXXX"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            keyboardType="phone-pad"
+            value={form.phone}
+            onChangeText={(text) => handleChange("phone", text)}
+          />
 
-            <Text style={styles.label}>National ID</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              placeholderTextColor="rgba(255,255,255,0.6)"
-              value={form.nationalId}
-              onChangeText={(text) =>
-                handleChange("nationalId", text)
-              }
-            />
+          <Text style={styles.label}>Personal email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="yasir@example.com"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            keyboardType="email-address"
+            value={form.email}
+            onChangeText={(text) => handleChange("email", text)}
+          />
 
-            <TouchableOpacity
-              style={styles.registerButton}
-              onPress={handleRegister}
-            >
-              <Text style={styles.registerText}>Create Account</Text>
-            </TouchableOpacity>
-          </BlurView>
-        </ScrollView>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="********"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            secureTextEntry
+            value={form.password}
+            onChangeText={(text) => handleChange("password", text)}
+          />
 
-        {/* Footer */}
-        <View style={styles.bottomBar}>
-          <Text style={styles.bottomText}>Contact Us</Text>
-          <Text style={styles.bottomText}>Terms</Text>
-          <Text style={styles.bottomText}>Policy</Text>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+          <Text style={styles.label}>National ID</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            placeholder="10-digit ID"
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            value={form.nationalId}
+            onChangeText={(text) => handleChange("nationalId", text)}
+          />
+
+          <TouchableOpacity
+            style={styles.registerButton}
+            onPress={handleRegister}
+          >
+            <Text style={styles.registerText}>Create Account</Text>
+          </TouchableOpacity>
+        </BlurView>
+      </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.bottomBar}>
+        <Text style={styles.bottomText}>Contact Us</Text>
+        <Text style={styles.bottomText}>Terms</Text>
+        <Text style={styles.bottomText}>Policy</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -185,7 +173,7 @@ const styles = StyleSheet.create({
   glassCard: {
     borderRadius: 30,
     padding: 20,
-    marginHorizontal: 20,   
+    marginHorizontal: 20,
     overflow: "hidden",
     backgroundColor: "rgba(255,255,255,0.08)",
     borderWidth: 1,

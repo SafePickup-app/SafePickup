@@ -2,19 +2,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    Dimensions,
-    FlatList,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+import Table from "../components/table";
 
 type Student = {
   id: string;
@@ -25,9 +22,9 @@ type Student = {
 const NFCLinking = () => {
   const router = useRouter();
   const { uid } = useLocalSearchParams<{ uid: string }>();
+
   const [search, setSearch] = useState("");
 
-  // dummy list
   const [students] = useState<Student[]>([
     { id: "1", name: "ahmed alzaid", grade: "G1" },
     { id: "2", name: "Faisal Alahassoun", grade: "G2" },
@@ -39,122 +36,154 @@ const NFCLinking = () => {
   ]);
 
   const filtered = students.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase()),
+    s.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleConfirm = (student: Student) => {
-    Alert.alert("Confirm Link", `Link student ${student.name} to NFC ${uid}?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Confirm",
-        onPress: () => {
-          Alert.alert("Success", `Linked successfully.`);
-          router.push("/available-nfcs");
+    Alert.alert(
+      "Confirm Link",
+      `Link student ${student.name} to NFC ${uid}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Confirm",
+          onPress: () => {
+            Alert.alert("Success", "Linked successfully.");
+            router.back();
+          },
         },
-      },
-    ]);
-  };
-
-  const renderItem = ({ item, index }: { item: Student; index: number }) => {
-    const rowTint = index % 2 === 0 ? styles.rowEven : null;
-    return (
-      <View style={[styles.row, rowTint]}>
-        <View style={[styles.cell, styles.nameCell]}>
-          <Text style={styles.nameText}>{item.name}</Text>
-        </View>
-        <View style={[styles.cell, styles.centerCell]}>
-          <Text style={styles.normalText}>{item.grade}</Text>
-        </View>
-        <View style={[styles.cell, styles.actionsCell]}>
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => handleConfirm(item)}
-          >
-            <Text style={styles.actionBtnText}>Confirm</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      ]
     );
   };
 
   return (
     <SafeAreaView style={styles.safe}>
+      
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push("/available-nfcs")}>
-          <Ionicons name="arrow-back" size={28} color="#fff" />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
 
-        <View style={{ width: 28 }} />
+        <Text style={styles.headerTitle}>Link NFC Card</Text>
+
+        <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.screen}>
+      <View style={styles.screen}>
+
         <View style={styles.card}>
-          <Text style={styles.title}>Link student to NFC: {uid}</Text>
+
+          <Text style={styles.title}>
+            Link student to NFC: {uid}
+          </Text>
 
           <View style={styles.searchRow}>
             <TextInput
-              placeholder="find student by name"
+              placeholder="Find student by name"
               value={search}
               onChangeText={setSearch}
               style={styles.searchInput}
             />
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View
-              style={[
-                styles.table,
-                { minWidth: Math.max(SCREEN_WIDTH - 48, 600) },
-              ]}
-            >
-              <View style={styles.headerRow}>
-                <View style={[styles.headerCell, styles.nameCell]}>
-                  <Text style={styles.headerText}>NAME</Text>
-                </View>
+          <Table
+            title=""
+            data={filtered}
+            columns={[
+              {
+                key: "name",
+                title: "NAME",
+                flex: 2,
+              },
+              {
+                key: "grade",
+                title: "GRADE",
+                flex: 1,
+              },
+              {
+                key: "action",
+                title: "ACTION",
+                flex: 2,
+                render: (item: Student) => (
+                  <TouchableOpacity
+                    style={styles.actionBtn}
+                    onPress={() => handleConfirm(item)}
+                  >
+                    <Text style={styles.actionBtnText}>
+                      Confirm
+                    </Text>
+                  </TouchableOpacity>
+                ),
+              },
+            ]}
+          />
 
-                <View style={[styles.headerCell, styles.centerCell]}>
-                  <Text style={styles.headerText}>GRADE</Text>
-                </View>
-
-                <View style={[styles.headerCell, styles.actionsCell]}>
-                  <Text style={styles.headerText}>ACTION</Text>
-                </View>
-              </View>
-
-              <FlatList
-                data={filtered}
-                keyExtractor={(i) => i.id}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-                style={styles.list}
-              />
-            </View>
-          </ScrollView>
         </View>
-      </ScrollView>
+
+      </View>
+
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#f0f0f0" },
-  screen: { alignItems: "center", paddingVertical: 24 },
+
+  safe: {
+    flex: 1,
+  },
+
+  screen: {
+    margin: 20,
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 24,
+  },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginTop: 60,
+  },
+
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  headerTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
   card: {
-    width: "92%",
+    width: "100%",
     borderRadius: 16,
     backgroundColor: "#ffffff",
     padding: 20,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
   },
-  title: { fontSize: 18, fontWeight: "700", color: "#000", marginBottom: 12 },
 
-  searchRow: { marginBottom: 18 },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#000",
+    marginBottom: 12,
+  },
+
+  searchRow: {
+    marginBottom: 18,
+  },
+
   searchInput: {
-    width: 320,
+    width: "100%",
     height: 40,
     borderRadius: 8,
     backgroundColor: "#fff",
@@ -163,50 +192,19 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
   },
 
-  table: { flexDirection: "column" },
-  headerRow: { flexDirection: "row", paddingVertical: 8, alignItems: "center" },
-  headerCell: { paddingHorizontal: 8, justifyContent: "center" },
-  headerText: {
-    fontSize: 12,
-    color: "#9e9e9e",
-    textTransform: "uppercase",
-    fontWeight: "600",
-  },
-
-  list: { maxHeight: 360 },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  rowEven: { backgroundColor: "#fafafa" },
-
-  cell: { paddingHorizontal: 8, justifyContent: "center" },
-  nameCell: { flex: 2, alignItems: "flex-start" },
-  centerCell: { flex: 1, alignItems: "center" },
-  actionsCell: { flex: 1, alignItems: "center" },
-
-  nameText: { fontSize: 14, color: "#111" },
-  normalText: { fontSize: 13, color: "#333" },
-
   actionBtn: {
     backgroundColor: "#2e7d32",
     borderRadius: 6,
     paddingHorizontal: 14,
     paddingVertical: 6,
   },
-  actionBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    backgroundColor: "#0E6B3B",
+  actionBtnText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
   },
+
 });
 
 export default NFCLinking;

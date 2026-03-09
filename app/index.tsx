@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -9,7 +8,6 @@ import {
   View,
   StatusBar,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 
 export default function LoginScreen() {
@@ -21,67 +19,65 @@ export default function LoginScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#0E6B3B", "#0A4F2A", "#041E12"]}
-      style={{ flex: 1 }}
-    >
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
 
-        {/* Switch Header */}
-        <View style={styles.switchContainer}>
-          <TouchableOpacity style={[styles.switchButton, styles.activeSwitch]}>
-            <Text style={styles.activeSwitchText}>Login</Text>
-          </TouchableOpacity>
+      {/* Switch Header */}
+      <View style={styles.switchContainer}>
+        <TouchableOpacity style={[styles.switchButton, styles.activeSwitch]}>
+          <Text style={styles.activeSwitchText}>Login</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.switchButton}
-            onPress={() => router.replace("/register")}
-          >
-            <Text style={styles.switchText}>New Account</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.switchButton}
+          onPress={() => router.replace("/register")}
+        >
+          <Text style={styles.switchText}>New Account</Text>
+        </TouchableOpacity>
+      </View>
 
-        {/* Glass Card */}
-        <BlurView intensity={60} tint="light" style={styles.glassCard}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>
-            Enter your credentials to continue
-          </Text>
+      {/* Glass Card */}
+      <BlurView intensity={60} tint="light" style={styles.glassCard}>
+        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.subtitle}>
+          Enter your credentials to continue
+        </Text>
 
-          <Text style={styles.label}>Phone number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="05XXXXXXXX"
-            placeholderTextColor="rgba(255,255,255,0.6)"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={setPhone}
-          />
+        <Text style={styles.label}>Phone number</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="05XXXXXXXX"
+          placeholderTextColor="rgba(255,255,255,0.6)"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={setPhone}
+        />
 
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="********"
-            placeholderTextColor="rgba(255,255,255,0.6)"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="********"
+          placeholderTextColor="rgba(255,255,255,0.6)"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginText}>Login</Text>
-          </TouchableOpacity>
-        </BlurView>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginText}>Login</Text>
+        </TouchableOpacity>
+      </BlurView>
 
-        {/* Footer */}
-        <View style={styles.bottomBar}>
-          <Text style={styles.bottomText}>Contact Us</Text>
-          <Text style={styles.bottomText}>Terms</Text>
-          <Text style={styles.bottomText}>Policy</Text>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+      <TouchableOpacity onPress={() => router.replace("/parent_dashboard")} style={{ marginTop: 20 }}>
+        <Text style={styles.loginText}>Go to parent dashboard (temp button)</Text>
+      </TouchableOpacity>
+      {/* Footer */}
+      <View style={styles.bottomBar}>
+        <Text style={styles.bottomText}>Contact Us</Text>
+        <Text style={styles.bottomText}>Terms</Text>
+        <Text style={styles.bottomText}>Policy</Text>
+      </View>
+    </View>
   );
 }
 
@@ -90,6 +86,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     paddingHorizontal: 20,
+    paddingTop: 20,
   },
 
   switchContainer: {
@@ -131,7 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.08)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.25)",
-    
   },
 
   title: {
