@@ -44,8 +44,6 @@ export default function PickupRequest() {
     const userLat = location.coords.latitude;
     const userLon = location.coords.longitude;
 
-    console.log("lat: "+ userLat +"and lon: "+ userLon)
-
     /* todo: send http request: 
      * {
           parentLat: userLat,
