@@ -14,7 +14,8 @@ export default function RootLayout() {
     pathname.includes("parent_dashboard") ||
     pathname.includes("pickup_request") ||
     pathname.includes("Congestion_page") ||
-    pathname.includes("childLog");
+    pathname.includes("childLog") ||
+    pathname.includes("about");
   const mainRoute = isParentScreen ? "/parent_dashboard" : "/dashboard";
 
   return (
