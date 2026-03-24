@@ -10,6 +10,13 @@ export default function RootLayout() {
   const pathname = usePathname();
 
   const hideLayout = pathname === "/" || pathname === "/register";
+  const isParentScreen =
+    pathname.includes("parent_dashboard") ||
+    pathname.includes("pickup_request") ||
+    pathname.includes("Congestion_page") ||
+    pathname.includes("childLog") ||
+    pathname.includes("about");
+  const mainRoute = isParentScreen ? "/parent_dashboard" : "/dashboard";
 
   return (
     <LinearGradient
@@ -18,7 +25,7 @@ export default function RootLayout() {
     >
       <StatusBar style="light" />
 
-      {!hideLayout && <Navbar />}
+      {!hideLayout && <Navbar mainRoute={mainRoute} />}
 
       <View style={styles.content}>
         <Stack

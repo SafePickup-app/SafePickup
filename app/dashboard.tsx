@@ -1,6 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -9,8 +7,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  TouchableOpacity
 } from "react-native";
 
 type CardProps = {
@@ -41,43 +38,41 @@ const Card: React.FC<CardProps> = ({
 export default function Dashboard() {
   const router = useRouter();
   return (
-    
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
 
-        {/* Content */}
-        <ScrollView contentContainerStyle={styles.content}>
-          <Card
-            title="Parent-Student Assignment"
-            description="Link students to their respective parent accounts securely."
-            buttonText="Manage Assignment"
-            onPress={() => router.push("/parents-status")}
-          />
+      {/* Content */}
+      <ScrollView contentContainerStyle={styles.content}>
+        <Card
+          title="Parent-Student Assignment"
+          description="Link students to their respective parent accounts securely."
+          buttonText="Manage Assignment"
+          onPress={() => router.push("/parents-status")}
+        />
 
-          <Card
-            title="NFC Card Assignment"
-            description="Assign and manage NFC cards connected to student profiles."
-            buttonText="Assign NFC Card"
-            onPress={() => router.push("/available-nfcs")}
-          />
+        <Card
+          title="NFC Card Assignment"
+          description="Assign and manage NFC cards connected to student profiles."
+          buttonText="Assign NFC Card"
+          onPress={() => router.push("/available-nfcs")}
+        />
 
-          <Card
-            title="Parent Records & Logs"
-            description="Browse and manage all registered parent accounts."
-            buttonText="Explore"
-            onPress={() => router.push("/adminLogs")}
-          />
+        <Card
+          title="Parent Records & Logs"
+          description="Browse and manage all registered parent accounts."
+          buttonText="Explore"
+          onPress={() => router.push("/adminLogs")}
+        />
 
-          <Card
-            title="Add New Student"
-            description="Add new students to verified parent accounts."
-            buttonText="Add Student"
-            onPress={() => router.push("/add-student")}
-          />
-        </ScrollView>
-      </SafeAreaView>
-
-);
+        <Card
+          title="Add New Student"
+          description="Add new students to verified parent accounts."
+          buttonText="Add Student"
+          onPress={() => router.push("/add-student")}
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({

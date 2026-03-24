@@ -5,27 +5,30 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type NavbarProps = {
   userName?: string;
+  mainRoute?: string;
 };
 
-export default function Navbar({ userName = "Yasir Fahad" }: NavbarProps) {
+export default function Navbar({
+  userName = "Yasir Fahad",
+  mainRoute = "/dashboard",
+}: NavbarProps) {
   const pathname = usePathname();
 
   const goMain = () => {
-    router.push("/dashboard" as any);
+    router.push(mainRoute as any);
   };
 
   const goAbout = () => {
     router.push("/about" as any);
   };
 
-  const isMain = pathname === "/dashboard";
+  const isMain = pathname === mainRoute;
   const isAbout = pathname === "/about";
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.navbar}>
         <View style={styles.leftSection}>
-
           <Ionicons
             name="person-circle-outline"
             size={30}
@@ -42,9 +45,14 @@ export default function Navbar({ userName = "Yasir Fahad" }: NavbarProps) {
         </View>
 
         <View style={styles.tabs}>
-
-          <TouchableOpacity onPress={goMain} style={styles.tab} activeOpacity={0.8}>
-            <Text style={[styles.tabText, isMain && styles.activeText]}>main</Text>
+          <TouchableOpacity
+            onPress={goMain}
+            style={styles.tab}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.tabText, isMain && styles.activeText]}>
+              main
+            </Text>
             {isMain && <View style={styles.underline} />}
           </TouchableOpacity>
         </View>
@@ -110,10 +118,11 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: "#FFFFFF",
     borderRadius: 2,
-  }, logoutBtn: {
+  },
+  logoutBtn: {
     backgroundColor: "rgba(255,255,255,0.15)",
     padding: 8,
     borderRadius: 10,
     marginHorizontal: 8,
-  }
+  },
 });
