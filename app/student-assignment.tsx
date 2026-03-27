@@ -1,18 +1,18 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  Dimensions,
+  FlatList,
   SafeAreaView,
   ScrollView,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
-  Dimensions,
   StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -33,7 +33,7 @@ export default function StudentAssignment() {
   const [query, setQuery] = useState("");
 
   const filtered = SAMPLE_STUDENTS.filter((s) =>
-    s.name.toLowerCase().includes(query.toLowerCase())
+    s.name.toLowerCase().includes(query.toLowerCase()),
   );
 
   const renderRow = ({ item, index }: { item: any; index: number }) => {
@@ -63,10 +63,7 @@ export default function StudentAssignment() {
       <StatusBar barStyle="light-content" />
 
       {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={22} color="#fff" />
       </TouchableOpacity>
 
@@ -131,15 +128,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  backButton: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    padding: 8,
-    borderRadius: 10,
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  // backButton: {
+  //   position: "absolute",
+  //   top: 10,
+  //   left: 20,
+  //   width: 42,
+  //   height: 42,
+  //   backgroundColor: "rgba(255,255,255,0.15)",
+  //   borderRadius: 10,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   zIndex: 10,
+  // },
 
   card: {
     borderRadius: 28,
@@ -152,6 +152,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
   },
+backButton: {
+     top: 0,
+    left: 20,
+    width: 38,
+    height: 38,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    padding: 8,
+    borderRadius: 10,
+    marginHorizontal: 8,
+  },
+
+  // card: {
+  //   borderRadius: 28,
+  //   padding: 20,
+  //   backgroundColor: "#ffffff",
+  //   overflow: "hidden",
+  //   elevation: 6,
+  // },
 
   title: {
     fontSize: 18,
