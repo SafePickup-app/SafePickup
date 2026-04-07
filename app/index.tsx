@@ -7,15 +7,51 @@ import {
   TouchableOpacity,
   View,
   StatusBar,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { BlurView } from "expo-blur";
+import axios from "axios";
+import { authService } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen() {
-  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
-  const handleLogin = () => {
-    router.replace("/dashboard");
+  const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert("Missing fields", "Please enter your phone and password.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const { token } = await authService.login({ username, password });
+      const role = await signIn(token);
+
+      if (role === "ADMIN") {
+        router.replace("/dashboard");
+      } else if (role === "PARENT") {
+        router.replace("/parent_dashboard");
+      } else {
+        Alert.alert("Login failed", "Unknown user role.");
+      }
+    } catch (err) {
+      let message = "Unable to login. Please try again.";
+      if (axios.isAxiosError(err)) {
+        message =
+          (err.response?.data as any)?.message ||
+          (err.response?.status === 401
+            ? "Invalid phone or password."
+            : err.message) ||
+          message;
+      }
+      Alert.alert("Login failed", message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,14 +79,13 @@ export default function LoginScreen() {
           Enter your credentials to continue
         </Text>
 
-        <Text style={styles.label}>Phone number</Text>
+        <Text style={styles.label}>username</Text>
         <TextInput
           style={styles.input}
-          placeholder="05XXXXXXXX"
+          placeholder="john doe"
           placeholderTextColor="rgba(255,255,255,0.6)"
-          keyboardType="phone-pad"
-          value={phone}
-          onChangeText={setPhone}
+          value={username}
+          onChangeText={setUsername}
         />
 
         <Text style={styles.label}>Password</Text>
@@ -63,14 +98,22 @@ export default function LoginScreen() {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginText}>Login</Text>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#0E6B3B" />
+          ) : (
+            <Text style={styles.loginText}>Login</Text>
+          )}
         </TouchableOpacity>
       </BlurView>
 
-      <TouchableOpacity onPress={() => router.replace("/parent_dashboard")} style={{ marginTop: 20 }}>
+      {/* <TouchableOpacity onPress={() => router.replace("/parent_dashboard")} style={{ marginTop: 20 }}>
         <Text style={styles.loginText}>Go to parent dashboard (temp button)</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       {/* Footer */}
       <View style={styles.bottomBar}>
         <Text style={styles.bottomText}>Contact Us</Text>

@@ -8,8 +8,12 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { BlurView } from "expo-blur";
+import axios from "axios";
+import { authService } from "../services/authService";
 
 export default function RegisterScreen() {
   const [form, setForm] = useState({
@@ -32,8 +36,29 @@ export default function RegisterScreen() {
     setForm({ ...form, [key]: value });
   };
 
-  const handleRegister = () => {
-    console.log(form);
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async () => {
+    const { username, phone, email, password, nationalId } = form;
+    if (!username || !phone || !email || !password || !nationalId) {
+      Alert.alert("Missing fields", "Please fill in all fields.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const { message } = await authService.registerParent(form);
+      Alert.alert("Success", message || "Account created successfully.", [
+        { text: "OK", onPress: () => router.replace("/") },
+      ]);
+    } catch (err) {
+      let msg = "Unable to register. Please try again.";
+      if (axios.isAxiosError(err)) {
+        msg = (err.response?.data as any)?.message || err.message || msg;
+      }
+      Alert.alert("Registration failed", msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,8 +141,13 @@ export default function RegisterScreen() {
           <TouchableOpacity
             style={styles.registerButton}
             onPress={handleRegister}
+            disabled={loading}
           >
-            <Text style={styles.registerText}>Create Account</Text>
+            {loading ? (
+              <ActivityIndicator color="#0E6B3B" />
+            ) : (
+              <Text style={styles.registerText}>Create Account</Text>
+            )}
           </TouchableOpacity>
         </BlurView>
       </ScrollView>

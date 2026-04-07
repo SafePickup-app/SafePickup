@@ -281,6 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.35)",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 200
   },
   modalBox: {
     width: "80%",

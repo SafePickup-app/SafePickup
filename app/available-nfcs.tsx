@@ -1,37 +1,49 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
+  ActivityIndicator,
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useQuery } from "@tanstack/react-query";
 
 import Table from "../components/table";
-
-type NFCCard = {
-  id: string;
-  uid: string;
-  status: "FREE" | "RESERVED";
-};
+import { adminService, NfcCardDto } from "../services/adminService";
+import { useAuth } from "../context/AuthContext";
 
 const AvailableNFCs = () => {
   const router = useRouter();
+  const { role } = useAuth();
 
-  const [nfcCards] = useState<NFCCard[]>([
-    { id: "1", uid: "A1B2C3D4", status: "FREE" },
-    { id: "2", uid: "04A224F", status: "FREE" },
-    { id: "3", uid: "9F338CB1", status: "RESERVED" },
-    { id: "4", uid: "355D33F", status: "RESERVED" },
-    { id: "5", uid: "1324D53", status: "FREE" },
-  ]);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["nfc", "cards"],
+    queryFn: adminService.getNfcCards,
+    enabled: role === "ADMIN",
+  });
+
+  React.useEffect(() => {
+    if (isError) {
+      Alert.alert("Error", (error as Error)?.message || "Failed to load NFC cards.");
+    }
+  }, [isError, error]);
+
+  if (role && role !== "ADMIN") {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.screen}>
+          <Text style={{ color: "#fff" }}>Admin access required.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
-
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -42,73 +54,74 @@ const AvailableNFCs = () => {
       </View>
 
       <View style={styles.screen}>
-
-        <Table
-          title="Available NFC Cards"
-          data={nfcCards}
-          columns={[
-            {
-              key: "uid",
-              title: "NFC UID",
-              flex: 1,
-            },
-            {
-              key: "status",
-              title: "STATUS",
-              flex: 1,
-              render: (item: NFCCard) => (
-                <View
-                  style={[
-                    styles.statusBadge,
-                    item.status === "FREE"
-                      ? styles.freeBadge
-                      : styles.reservedBadge,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.statusText,
-                      item.status === "FREE"
-                        ? styles.freeText
-                        : styles.reservedText,
-                    ]}
+        {isLoading ? (
+          <ActivityIndicator color="#fff" style={{ marginTop: 30 }} />
+        ) : (
+          <Table
+            title="Available NFC Cards"
+            data={data ?? []}
+            columns={[
+              {
+                key: "uid",
+                title: "NFC UID",
+                flex: 1,
+              },
+              {
+                key: "status",
+                title: "STATUS",
+                flex: 1,
+                render: (item: NfcCardDto) => {
+                  const isFree = String(item.status).toUpperCase() === "FREE";
+                  return (
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        isFree ? styles.freeBadge : styles.reservedBadge,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.statusText,
+                          isFree ? styles.freeText : styles.reservedText,
+                        ]}
+                      >
+                        {item.status}
+                      </Text>
+                    </View>
+                  );
+                },
+              },
+              {
+                key: "action",
+                title: "ACTION",
+                flex: 1,
+                render: (item: NfcCardDto) => (
+                  <TouchableOpacity
+                    style={styles.actionBtn}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/nfc-linking",
+                        params: {
+                          nfcId: String(item.id),
+                          uid: item.uid,
+                        },
+                      })
+                    }
                   >
-                    {item.status}
-                  </Text>
-                </View>
-              ),
-            },
-            {
-              key: "action",
-              title: "ACTION",
-              flex: 1,
-              render: (item: NFCCard) => (
-                <TouchableOpacity
-                  style={styles.actionBtn}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/nfc-linking",
-                      params: { uid: item.uid },
-                    })
-                  }
-                >
-                  <Text style={styles.actionBtnText}>Link</Text>
-                </TouchableOpacity>
-              ),
-            },
-          ]}
-        />
-
+                    <Text style={styles.actionBtnText}>Link</Text>
+                  </TouchableOpacity>
+                ),
+              },
+            ]}
+          />
+        )}
       </View>
-
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-  },
+  safe: { flex: 1 },
 
   screen: {
     flex: 1,
@@ -121,7 +134,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-
   },
 
   backButton: {
@@ -129,12 +141,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 10,
     marginHorizontal: 8,
-  },
-
-  headerTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
   },
 
   actionBtn: {
@@ -150,10 +156,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  statusText: {
-    fontSize: 13,
-    fontWeight: "600",
-  },
+  statusText: { fontSize: 13, fontWeight: "600" },
 
   statusBadge: {
     paddingHorizontal: 8,
@@ -161,21 +164,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 
-  freeBadge: {
-    backgroundColor: "#E8F5E9",
-  },
-
-  reservedBadge: {
-    backgroundColor: "#FFF3E0",
-  },
-
-  freeText: {
-    color: "#2E7D32",
-  },
-
-  reservedText: {
-    color: "#F57C00",
-  },
+  freeBadge: { backgroundColor: "#E8F5E9" },
+  reservedBadge: { backgroundColor: "#FFF3E0" },
+  freeText: { color: "#2E7D32" },
+  reservedText: { color: "#F57C00" },
 });
 
 export default AvailableNFCs;

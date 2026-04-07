@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, usePathname } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "../context/AuthContext";
 
 type NavbarProps = {
   userName?: string;
@@ -9,9 +10,11 @@ type NavbarProps = {
 };
 
 export default function Navbar({
-  userName = "Yasir Fahad",
+  userName,
   mainRoute = "/dashboard",
 }: NavbarProps) {
+  const { username, signOut } = useAuth();
+  const displayName = userName ?? username ?? "User";
   const pathname = usePathname();
 
   const goMain = () => {
@@ -35,10 +38,13 @@ export default function Navbar({
             color="#FFFFFF"
             style={styles.avatar}
           />
-          <Text style={styles.userName}>{userName}</Text>
+          <Text style={styles.userName}>{displayName}</Text>
           <TouchableOpacity
             style={styles.logoutBtn}
-            onPress={() => router.replace("/")}
+            onPress={async () => {
+              await signOut();
+              router.replace("/");
+            }}
           >
             <Ionicons name="log-out-outline" size={22} color="#fff" />
           </TouchableOpacity>

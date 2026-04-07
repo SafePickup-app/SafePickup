@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   SafeAreaView,
   StyleSheet,
@@ -10,47 +11,69 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Table from "../components/table";
-
-type Student = {
-  id: string;
-  name: string;
-  grade: string;
-};
+import { adminService, StudentDto } from "../services/adminService";
+import { useAuth } from "../context/AuthContext";
 
 const NFCLinking = () => {
   const router = useRouter();
-  const { uid } = useLocalSearchParams<{ uid: string }>();
+  const { uid, nfcId } = useLocalSearchParams<{ uid: string; nfcId: string }>();
+  const { role } = useAuth();
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
 
-  const [students] = useState<Student[]>([
-    { id: "1", name: "ahmed alzaid", grade: "G1" },
-    { id: "2", name: "Faisal Alahassoun", grade: "G2" },
-    { id: "3", name: "Yasir Alateeq", grade: "G1" },
-    { id: "4", name: "Yaser Alrashid", grade: "G3" },
-    { id: "5", name: "John doe", grade: "G4" },
-    { id: "6", name: "ahmed alzaid", grade: "G5" },
-    { id: "7", name: "Faisal Alahassoun", grade: "G2" },
-  ]);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["students"],
+    queryFn: adminService.getAllStudents,
+    enabled: role === "ADMIN",
+  });
 
+  const linkMutation = useMutation({
+    mutationFn: (studentId: string | number) =>
+      adminService.linkNfcToStudent(studentId, nfcId!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["nfc", "cards"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      Alert.alert("Success", "NFC linked to student successfully.", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    },
+    onError: (err: any) => {
+      Alert.alert("Error", err?.response?.data?.message || err?.message || "Failed to link.");
+    },
+  });
+
+  if (role && role !== "ADMIN") {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.screen}>
+          <Text>Admin access required.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const students: StudentDto[] = data ?? [];
   const filtered = students.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase())
+    (s.username || s.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleConfirm = (student: Student) => {
+  const handleConfirm = (student: StudentDto) => {
+    if (!nfcId) {
+      Alert.alert("Error", "Missing NFC id.");
+      return;
+    }
     Alert.alert(
       "Confirm Link",
-      `Link student ${student.name} to NFC ${uid}?`,
+      `Link student ${student.username || student.name} to NFC ${uid}?`,
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "Confirm",
-          onPress: () => {
-            Alert.alert("Success", "Linked successfully.");
-            router.back();
-          },
+          onPress: () => linkMutation.mutate(student.id),
         },
       ]
     );
@@ -58,7 +81,6 @@ const NFCLinking = () => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -70,9 +92,7 @@ const NFCLinking = () => {
 
       <View style={styles.screen}>
         <View style={styles.card}>
-          <Text style={styles.title}>
-            Link student to NFC: {uid}
-          </Text>
+          <Text style={styles.title}>Link student to NFC: {uid}</Text>
 
           <View style={styles.searchRow}>
             <TextInput
@@ -83,37 +103,45 @@ const NFCLinking = () => {
             />
           </View>
 
-          <Table
-            title=""
-            data={filtered}
-            columns={[
-              {
-                key: "name",
-                title: "NAME",
-                flex: 2,
-              },
-              {
-                key: "grade",
-                title: "GRADE",
-                flex: 1,
-              },
-              {
-                key: "action",
-                title: "ACTION",
-                flex: 2,
-                render: (item: Student) => (
-                  <TouchableOpacity
-                    style={styles.actionBtn}
-                    onPress={() => handleConfirm(item)}
-                  >
-                    <Text style={styles.actionBtnText}>
-                      Confirm
-                    </Text>
-                  </TouchableOpacity>
-                ),
-              },
-            ]}
-          />
+          {isLoading ? (
+            <ActivityIndicator color="#0E6B3B" style={{ marginVertical: 30 }} />
+          ) : isError ? (
+            <Text style={{ color: "#D32F2F", textAlign: "center" }}>
+              Failed to load students.
+            </Text>
+          ) : (
+            <Table
+              title=""
+              data={filtered.map((s) => ({
+                id: s.id,
+                name: s.username || s.name || "",
+                grade: s.grade || s.Grade || "",
+                _raw: s,
+              }))}
+              columns={[
+                { key: "name", title: "NAME", flex: 2 },
+                { key: "grade", title: "GRADE", flex: 1 },
+                {
+                  key: "action",
+                  title: "ACTION",
+                  flex: 2,
+                  render: (item: any) => (
+                    <TouchableOpacity
+                      style={styles.actionBtn}
+                      onPress={() => handleConfirm(item._raw)}
+                      disabled={linkMutation.isPending}
+                    >
+                      {linkMutation.isPending ? (
+                        <ActivityIndicator color="#fff" size="small" />
+                      ) : (
+                        <Text style={styles.actionBtnText}>Confirm</Text>
+                      )}
+                    </TouchableOpacity>
+                  ),
+                },
+              ]}
+            />
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -121,11 +149,8 @@ const NFCLinking = () => {
 };
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-  },
+  safe: { flex: 1 },
 
-  /* نفس الهيدر السابق */
   header: {
     marginTop: 20,
     paddingHorizontal: 20,
@@ -159,9 +184,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  searchRow: {
-    marginBottom: 18,
-  },
+  searchRow: { marginBottom: 18 },
 
   searchInput: {
     width: "100%",
@@ -178,6 +201,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 14,
     paddingVertical: 6,
+    minWidth: 70,
+    alignItems: "center",
   },
 
   actionBtnText: {

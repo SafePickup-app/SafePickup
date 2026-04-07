@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
+import  {ActivityIndicator,
+  Alert,
   Dimensions,
   FlatList,
   SafeAreaView,
@@ -13,45 +14,88 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { adminService, StudentDto } from "../services/adminService";
+import { useAuth } from "../context/AuthContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-const SAMPLE_STUDENTS = [
-  { id: "1", name: "ahmed alzaid", grade: "G1" },
-  { id: "2", name: "Faisal Alahassoun", grade: "G2" },
-  { id: "3", name: "Yasir Alateeq", grade: "G1" },
-  { id: "4", name: "Yaser Alrashid", grade: "G3" },
-  { id: "5", name: "John doe", grade: "G4" },
-  { id: "6", name: "ahmed alzaid", grade: "G5" },
-  { id: "7", name: "Faisal Alahassoun", grade: "G2" },
-];
 
 export default function StudentAssignment() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const parentName = (params.name as string) || "";
+  const parentId = Number(params.parentId);
   const [query, setQuery] = useState("");
+  const { role } = useAuth();
+  const queryClient = useQueryClient();
 
-  const filtered = SAMPLE_STUDENTS.filter((s) =>
-    s.name.toLowerCase().includes(query.toLowerCase()),
-  );
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["students"],
+    queryFn: adminService.getAllStudents,
+    enabled: role === "ADMIN",
+  });
 
-  const renderRow = ({ item, index }: { item: any; index: number }) => {
+  const linkMutation = useMutation({
+    mutationFn: (studentId: number) =>
+      adminService.linkParentToStudent(parentId!, studentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["parents", "assignment"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      Alert.alert("Success", "Student linked to parent successfully.", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    },
+    onError: (err: any) => {
+      Alert.alert("Error", err?.response?.data?.message || err?.message || "Failed to link.");
+    },
+  });
+
+  if (role && role !== "ADMIN") {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ color: "#fff" }}>Admin access required.</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const students: StudentDto[] = data ?? [];
+  const filtered = students.filter((s) => {
+    const name = (s.username || s.name || "").toLowerCase();
+    return name.includes(query.toLowerCase());
+  });
+
+  const renderRow = ({ item, index }: { item: StudentDto; index: number }) => {
     const even = index % 2 === 0;
+    const name = item.username || item.name || "";
+    const grade = item.grade || item.Grade || "";
 
     return (
       <View style={[styles.row, even && styles.rowEven]}>
         <View style={[styles.cell, styles.nameCell]}>
-          <Text style={styles.nameText}>{item.name}</Text>
+          <Text style={styles.nameText}>{name}</Text>
         </View>
 
         <View style={[styles.cell, styles.centerCell]}>
-          <Text style={styles.gradeBadge}>{item.grade}</Text>
+          <Text style={styles.gradeBadge}>{grade}</Text>
         </View>
 
         <View style={[styles.cell, styles.actionsCell]}>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>Confirm</Text>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => {
+              if (!parentId) {
+                Alert.alert("Error", "Missing parent id.");
+                return;
+              }
+              linkMutation.mutate(Number(item.id));
+            }}
+            disabled={linkMutation.isPending}
+          >
+            {linkMutation.isPending ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.actionBtnText}>Confirm</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -62,7 +106,6 @@ export default function StudentAssignment() {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" />
 
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={22} color="#fff" />
       </TouchableOpacity>
@@ -84,37 +127,44 @@ export default function StudentAssignment() {
             />
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View
-              style={[
-                styles.table,
-                { minWidth: Math.max(SCREEN_WIDTH - 48, 500) },
-              ]}
-            >
-              {/* Table Header */}
-              <View style={styles.headerRow}>
-                <View style={[styles.cell, styles.nameCell]}>
-                  <Text style={styles.tableHeaderText}>NAME</Text>
+          {isLoading ? (
+            <ActivityIndicator color="#0E6B3B" style={{ marginVertical: 30 }} />
+          ) : isError ? (
+            <Text style={{ color: "#D32F2F", textAlign: "center" }}>
+              Failed to load students.
+            </Text>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View
+                style={[
+                  styles.table,
+                  { minWidth: Math.max(SCREEN_WIDTH - 48, 500) },
+                ]}
+              >
+                <View style={styles.headerRow}>
+                  <View style={[styles.cell, styles.nameCell]}>
+                    <Text style={styles.tableHeaderText}>NAME</Text>
+                  </View>
+
+                  <View style={[styles.cell, styles.centerCell]}>
+                    <Text style={styles.tableHeaderText}>GRADE</Text>
+                  </View>
+
+                  <View style={[styles.cell, styles.actionsCell]}>
+                    <Text style={styles.tableHeaderText}>ACTION</Text>
+                  </View>
                 </View>
 
-                <View style={[styles.cell, styles.centerCell]}>
-                  <Text style={styles.tableHeaderText}>GRADE</Text>
-                </View>
-
-                <View style={[styles.cell, styles.actionsCell]}>
-                  <Text style={styles.tableHeaderText}>ACTION</Text>
-                </View>
+                <FlatList
+                  data={filtered}
+                  keyExtractor={(i) => String(i.id)}
+                  renderItem={renderRow}
+                  showsVerticalScrollIndicator={false}
+                  style={styles.list}
+                />
               </View>
-
-              <FlatList
-                data={filtered}
-                keyExtractor={(i) => i.id}
-                renderItem={renderRow}
-                showsVerticalScrollIndicator={false}
-                style={styles.list}
-              />
-            </View>
-          </ScrollView>
+            </ScrollView>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -128,19 +178,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  // backButton: {
-  //   position: "absolute",
-  //   top: 10,
-  //   left: 20,
-  //   width: 42,
-  //   height: 42,
-  //   backgroundColor: "rgba(255,255,255,0.15)",
-  //   borderRadius: 10,
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   zIndex: 10,
-  // },
-
   card: {
     borderRadius: 28,
     padding: 20,
@@ -152,8 +189,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
   },
-backButton: {
-     top: 0,
+
+  backButton: {
+    top: 0,
     left: 20,
     width: 38,
     height: 38,
@@ -162,14 +200,6 @@ backButton: {
     borderRadius: 10,
     marginHorizontal: 8,
   },
-
-  // card: {
-  //   borderRadius: 28,
-  //   padding: 20,
-  //   backgroundColor: "#ffffff",
-  //   overflow: "hidden",
-  //   elevation: 6,
-  // },
 
   title: {
     fontSize: 18,
@@ -183,9 +213,7 @@ backButton: {
     fontWeight: "700",
   },
 
-  searchContainer: {
-    marginBottom: 18,
-  },
+  searchContainer: { marginBottom: 18 },
 
   searchInput: {
     height: 44,
@@ -196,9 +224,7 @@ backButton: {
     borderColor: "#e0e0e0",
   },
 
-  table: {
-    flexDirection: "column",
-  },
+  table: { flexDirection: "column" },
 
   headerRow: {
     flexDirection: "row",
@@ -212,9 +238,7 @@ backButton: {
     fontWeight: "600",
   },
 
-  list: {
-    maxHeight: 360,
-  },
+  list: { maxHeight: 360 },
 
   row: {
     flexDirection: "row",
@@ -224,9 +248,7 @@ backButton: {
     borderBottomColor: "#eeeeee",
   },
 
-  rowEven: {
-    backgroundColor: "#fafafa",
-  },
+  rowEven: { backgroundColor: "#fafafa" },
 
   cell: {
     paddingHorizontal: 8,
@@ -237,10 +259,7 @@ backButton: {
   centerCell: { flex: 1, alignItems: "center" },
   actionsCell: { flex: 1, alignItems: "center" },
 
-  nameText: {
-    fontSize: 14,
-    color: "#111",
-  },
+  nameText: { fontSize: 14, color: "#111" },
 
   gradeBadge: {
     backgroundColor: "#e8f5e9",
@@ -257,6 +276,9 @@ backButton: {
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 6,
+    minWidth: 70,
+    alignItems: "center",
+    justifyContent: "center", // Added to center the text perfectly
   },
 
   actionBtnText: {

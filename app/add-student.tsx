@@ -8,9 +8,14 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { adminService } from "../services/adminService";
+import { useAuth } from "../context/AuthContext";
 
 export default function AddStudentScreen() {
   const [form, setForm] = useState({
@@ -19,13 +24,51 @@ export default function AddStudentScreen() {
     latitude: "",
     longitude: "",
   });
+  const { role } = useAuth();
+  const queryClient = useQueryClient();
 
   const handleChange = (key: string, value: string) => {
     setForm({ ...form, [key]: value });
   };
 
+  const mutation = useMutation({
+    mutationFn: adminService.registerStudent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      Alert.alert("Success", "Student registered successfully.", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    },
+    onError: (err: any) => {
+      Alert.alert(
+        "Error",
+        err?.response?.data?.message || err?.message || "Failed to register student."
+      );
+    },
+  });
+
   const handleSubmit = () => {
-    console.log("Student Form Data:", form);
+    if (role !== "ADMIN") {
+      Alert.alert("Forbidden", "Admin access required.");
+      return;
+    }
+    const { name, grade, latitude, longitude } = form;
+    if (!name || !grade || !latitude || !longitude) {
+      Alert.alert("Missing fields", "Please fill in all fields.");
+      return;
+    }
+    const lat = parseFloat(latitude);
+    const lon = parseFloat(longitude);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) {
+      Alert.alert("Invalid coordinates", "Latitude/Longitude must be numbers.");
+      return;
+    }
+    mutation.mutate({
+      name,
+      Grade: grade,
+      SchoolLat: lat,
+      SchoolLon: lon,
+    });
   };
 
   return (
@@ -87,8 +130,16 @@ export default function AddStudentScreen() {
             onChangeText={(text) => handleChange("longitude", text)}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Register</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSubmit}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Register</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

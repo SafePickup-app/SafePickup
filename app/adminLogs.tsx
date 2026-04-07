@@ -1,29 +1,48 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useQuery } from "@tanstack/react-query";
 
 import Table from "../components/table";
-
-type Log = {
-  id: string;
-  student: string;
-  nfc: string;
-  time: string;
-  status: "APPROVED" | "REJECTED" | "FREE";
-};
+import { adminService, AdminLogDto } from "../services/adminService";
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogs() {
   const router = useRouter();
+  const { role } = useAuth();
 
-  const rows: Log[] = [
-    { id: "1", student: "abdullah", nfc: "ASWD2478", time: "2026-02-12", status: "APPROVED" },
-    { id: "2", student: "abdullah", nfc: "ASWD2478", time: "2026-02-11", status: "REJECTED" },
-    { id: "3", student: "Ali", nfc: "JDENAP34", time: "2026-02-10", status: "FREE" },
-  ];
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["admin", "logs"],
+    queryFn: adminService.getAdminLogs,
+    enabled: role === "ADMIN",
+  });
+
+  React.useEffect(() => {
+    if (isError) {
+      Alert.alert("Error", (error as Error)?.message || "Failed to load logs.");
+    }
+  }, [isError, error]);
+
+  if (role && role !== "ADMIN") {
+    return (
+      <View style={styles.page}>
+        <View style={styles.screen}>
+          <Text style={{ color: "#fff" }}>Admin access required.</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.page}>
-      {/* Back Button */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -34,68 +53,39 @@ export default function AdminLogs() {
       </View>
 
       <View style={styles.screen}>
-        <Table
-          title="Exit Logs"
-          data={rows}
-          columns={[
-            {
-              key: "student",
-              title: "STUDENT",
-              flex: 2,
-            },
-            {
-              key: "nfc",
-              title: "NFC UID",
-              flex: 2,
-            },
-            {
-              key: "time",
-              title: "REQUEST TIME",
-              flex: 2,
-            },
-            {
-              key: "status",
-              title: "STATUS",
-              flex: 1,
-              render: (item: Log) => {
-                if (item.status === "APPROVED")
-                  return (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={22}
-                      color="#2E7D32"
-                    />
-                  );
-
-                if (item.status === "REJECTED")
-                  return (
-                    <Ionicons
-                      name="alert-circle"
-                      size={22}
-                      color="#D32F2F"
-                    />
-                  );
-
-                return (
-                  <Ionicons
-                    name="time-outline"
-                    size={22}
-                    color="#999"
-                  />
-                );
+        {isLoading ? (
+          <ActivityIndicator color="#fff" style={{ marginTop: 30 }} />
+        ) : (
+          <Table
+            title="Exit Logs"
+            data={data ?? []}
+            columns={[
+              { key: "studentName", title: "STUDENT", flex: 2 },
+              { key: "nfcUid", title: "NFC UID", flex: 2 },
+              { key: "requestTime", title: "REQUEST TIME", flex: 2 },
+              {
+                key: "status",
+                title: "STATUS",
+                flex: 1,
+                render: (item: AdminLogDto) => {
+                  const s = String(item.status).toUpperCase();
+                  if (s === "APPROVED")
+                    return <Ionicons name="checkmark-circle" size={22} color="#2E7D32" />;
+                  if (s === "REJECTED")
+                    return <Ionicons name="alert-circle" size={22} color="#D32F2F" />;
+                  return <Ionicons name="time-outline" size={22} color="#999" />;
+                },
               },
-            },
-          ]}
-        />
+            ]}
+          />
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-  },
+  page: { flex: 1 },
 
   header: {
     marginTop: 20,
