@@ -180,13 +180,14 @@ export default function PickupRequest() {
       });
 
       if (result.success) {
+        await parentService.verifyBiometric();
         setStudents((prev) =>
           prev.map((s) =>
             s.id === pendingStudentId ? { ...s, status: "APPROVED" } : s,
-          ),
-        );
-      } else {
-        Alert.alert("Error", "Authentication failed. Please try again.");
+      ),
+    );
+  } else {
+    Alert.alert("Error", "Authentication failed. Please try again.");
       }
     } catch (err: any) {
       const msg =

@@ -41,6 +41,10 @@ export const parentService = {
   async verifyOtp(otp: number): Promise<void> {
     await apiClient.post(`/api/v1/parent/verify-otp/${otp}`);
   },
+
+  async verifyBiometric(): Promise<void> {
+    await apiClient.post("/api/v1/parent/biometric-auth");
+  },
   async getAttendanceLogs(): Promise<AttendanceLogDto[]> {
     const { data } = await apiClient.get<AttendanceLogDto[]>(
       "/api/v1/exitlog/get/my-logs"
