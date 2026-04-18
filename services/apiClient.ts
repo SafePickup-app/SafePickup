@@ -1,6 +1,5 @@
 import axios from "axios";
 import { tokenService } from "./tokenService";
-let workIp = '192.168.1.182'
 let uniIp = '192.168.100.37';
 export const API_BASE_URL = `http://${uniIp}:8080`;
 
