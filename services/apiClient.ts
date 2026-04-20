@@ -1,7 +1,7 @@
 import axios from "axios";
 import { tokenService } from "./tokenService";
-let uniIp = '192.168.100.27';
-export const API_BASE_URL = `http://${uniIp}:8080`;
+let IP_ADDRESS = '';
+export const API_BASE_URL = `http://${IP_ADDRESS}:8080`;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
