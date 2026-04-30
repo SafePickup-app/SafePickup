@@ -54,8 +54,14 @@ export default function AddStudentScreen() {
       return;
     }
     const { name, grade, nationalId, latitude, longitude } = form;
-    if (!name || !grade || !nationalId || !latitude || !longitude) {
-      Alert.alert("Missing fields", "Please fill in all fields.");
+    const missing: string[] = [];
+    if (!name.trim()) missing.push("Student name is required");
+    if (!grade.trim()) missing.push("Grade is required");
+    if (!nationalId.trim()) missing.push("National ID is required");
+    if (!latitude.trim()) missing.push("School latitude is required");
+    if (!longitude.trim()) missing.push("School longitude is required");
+    if (missing.length > 0) {
+      Alert.alert("Missing fields", missing.join("\n"));
       return;
     }
     const lat = parseFloat(latitude);

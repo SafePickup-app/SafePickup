@@ -39,8 +39,14 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     const { username, phone, email, password, nationalId } = form;
-    if (!username || !phone || !email || !password || !nationalId) {
-      Alert.alert("Missing fields", "Please fill in all fields.");
+    const missing: string[] = [];
+    if (!username.trim()) missing.push("Name is required");
+    if (!phone.trim()) missing.push("Phone number is required");
+    if (!email.trim()) missing.push("Email is required");
+    if (!password.trim()) missing.push("Password is required");
+    if (!nationalId.trim()) missing.push("National ID is required");
+    if (missing.length > 0) {
+      Alert.alert("Missing fields", missing.join("\n"));
       return;
     }
     try {
@@ -52,7 +58,15 @@ export default function RegisterScreen() {
     } catch (err) {
       let msg = "Unable to register. Please try again.";
       if (axios.isAxiosError(err)) {
-        msg = (err.response?.data as any)?.message || err.message || msg;
+        const data = err.response?.data as any;
+        if (data?.message) {
+          msg = data.message;
+        } else if (data && typeof data === "object") {
+          const messages = Object.values(data).filter(Boolean);
+          if (messages.length > 0) msg = messages.join("\n");
+        } else {
+          msg = err.message || msg;
+        }
       }
       Alert.alert("Registration failed", msg);
     } finally {

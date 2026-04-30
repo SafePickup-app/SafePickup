@@ -46,7 +46,7 @@ export default function LoginScreen() {
         message =
           (err.response?.data as any)?.message ||
           (err.response?.status === 401
-            ? "Invalid phone or password."
+            ? "Invalid username or password."
             : err.message) ||
           message;
       }
